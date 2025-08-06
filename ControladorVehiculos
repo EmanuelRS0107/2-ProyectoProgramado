@@ -1,0 +1,41 @@
+package vehiculos;
+
+import java.util.ArrayList;
+
+public class ControladorVehiculo {
+    private ArrayList<Vehiculo> listaVehiculos;
+
+    public ControladorVehiculo() {
+        listaVehiculos = new ArrayList<>();
+    }
+
+    public void agregarVehiculo(Vehiculo vehiculo) {
+        listaVehiculos.add(vehiculo);
+    }
+
+    public Vehiculo buscarVehiculoPorPlaca(String placa) {
+        for (Vehiculo v : listaVehiculos) {
+            if (v.getPlaca().equalsIgnoreCase(placa)) {
+                return v;
+            }
+        }
+        return null;
+    }
+
+    public boolean eliminarVehiculo(String placa) {
+        Vehiculo v = buscarVehiculoPorPlaca(placa);
+        if (v != null) {
+            listaVehiculos.remove(v);
+            return true;
+        }
+        return false;
+    }
+
+    public ArrayList<Vehiculo> getListaVehiculos() {
+        return listaVehiculos;
+    }
+
+    public void actualizarVehiculos() {
+
+    }
+}
