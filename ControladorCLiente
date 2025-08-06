@@ -47,7 +47,7 @@ public class ControladorCliente {
         ClassCliente cliente = buscarClientePorCedula(cedula);
         if (cliente != null) {
             listaClientes.remove(cliente);
-            // ✅ Guardar después de eliminar
+           
             GestionadorDeArchivos.guardarClientes(listaClientes);
             return true;
         }
