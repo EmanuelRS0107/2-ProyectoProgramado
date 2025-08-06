@@ -33,3 +33,4 @@ public class VehiculoTaller {
         return new String[] { placa, marca, modelo, color };
     }
 }
+
