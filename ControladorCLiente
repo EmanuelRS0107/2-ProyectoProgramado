@@ -1,0 +1,56 @@
+package clientes;
+
+import java.util.ArrayList;
+import java.util.List;
+import persistencia.GestionadorDeArchivos; 
+
+public class ControladorCliente {
+
+    private List<ClassCliente> listaClientes;
+
+    public ControladorCliente() {
+        
+        listaClientes = GestionadorDeArchivos.cargarClientes();
+    }
+
+    public void registrarCliente(ClassCliente cliente) {
+        listaClientes.add(cliente);
+        
+        GestionadorDeArchivos.guardarClientes(listaClientes);
+    }
+
+    public List<ClassCliente> getListaClientes() {
+        return listaClientes;
+    }
+
+    public ClassCliente buscarClientePorCedula(String cedula) {
+        for (ClassCliente cliente : listaClientes) {
+            if (cliente.getCedula().equals(cedula)) {
+                return cliente;
+            }
+        }
+        return null;
+    }
+
+    public void modificarCliente(String cedula, String nuevoNombre, String nuevoTelefono, String nuevaDireccion) {
+        ClassCliente cliente = buscarClientePorCedula(cedula);
+        if (cliente != null) {
+            cliente.setNombre(nuevoNombre);
+            cliente.setTelefono(nuevoTelefono);
+            cliente.setDireccion(nuevaDireccion);
+            
+            GestionadorDeArchivos.guardarClientes(listaClientes);
+        }
+    }
+
+    public boolean eliminarCliente(String cedula) {
+        ClassCliente cliente = buscarClientePorCedula(cedula);
+        if (cliente != null) {
+            listaClientes.remove(cliente);
+            // ✅ Guardar después de eliminar
+            GestionadorDeArchivos.guardarClientes(listaClientes);
+            return true;
+        }
+        return false;
+    }
+}
