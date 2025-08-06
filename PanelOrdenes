@@ -1,0 +1,180 @@
+package paneles;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.io.*;
+import java.util.ArrayList;
+
+public class PanelOrdenes extends JPanel {
+
+    private JTextField campoNumero, campoCliente, campoVehiculo, campoServicio;
+    private DefaultTableModel modeloTabla;
+    private JTable tablaOrdenes;
+    private ArrayList<String> ordenes = new ArrayList<>();
+    private final String archivo = "ordenes.csv";
+
+    public PanelOrdenes() {
+        setLayout(new BorderLayout());
+
+        JPanel formulario = new JPanel(new GridLayout(5, 2, 5, 5));
+        formulario.setBorder(BorderFactory.createTitledBorder("Datos de la Orden"));
+
+        campoNumero = new JTextField();
+        campoCliente = new JTextField();
+        campoVehiculo = new JTextField();
+        campoServicio = new JTextField();
+
+        formulario.add(new JLabel("Número de Orden:"));
+        formulario.add(campoNumero);
+        formulario.add(new JLabel("Cliente:"));
+        formulario.add(campoCliente);
+        formulario.add(new JLabel("Vehículo:"));
+        formulario.add(campoVehiculo);
+        formulario.add(new JLabel("Servicio:"));
+        formulario.add(campoServicio);
+
+        JPanel botones = new JPanel(new FlowLayout());
+        JButton btnRegistrar = new JButton("Registrar");
+        JButton btnConsultar = new JButton("Consultar");
+        JButton btnModificar = new JButton("Modificar");
+        JButton btnEliminar = new JButton("Eliminar");
+
+        botones.add(btnRegistrar);
+        botones.add(btnConsultar);
+        botones.add(btnModificar);
+        botones.add(btnEliminar);
+
+        modeloTabla = new DefaultTableModel(new String[]{"Número", "Cliente", "Vehículo", "Servicio"}, 0);
+        tablaOrdenes = new JTable(modeloTabla);
+        JScrollPane scrollTabla = new JScrollPane(tablaOrdenes);
+
+        JPanel centro = new JPanel(new BorderLayout());
+        centro.add(formulario, BorderLayout.NORTH);
+        centro.add(botones, BorderLayout.SOUTH);
+
+        add(centro, BorderLayout.NORTH);
+        add(scrollTabla, BorderLayout.CENTER);
+
+        cargarOrdenes();
+        actualizarTabla();
+
+        btnRegistrar.addActionListener(e -> registrarOrden());
+        btnConsultar.addActionListener(e -> actualizarTabla());
+        btnModificar.addActionListener(e -> modificarOrden());
+        btnEliminar.addActionListener(e -> eliminarOrden());
+    }
+
+    private void registrarOrden() {
+        String numero = campoNumero.getText().trim();
+        String cliente = campoCliente.getText().trim();
+        String vehiculo = campoVehiculo.getText().trim();
+        String servicio = campoServicio.getText().trim();
+
+        if (numero.isEmpty() || cliente.isEmpty() || vehiculo.isEmpty() || servicio.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debes completar todos los campos para continuar");
+            return;
+        }
+
+        for (String o : ordenes) {
+            if (o.startsWith(numero + ",")) {
+                JOptionPane.showMessageDialog(this, "Ya existe una orden con ese número, verifique e intente de nuevo");
+                return;
+            }
+        }
+
+        String orden = numero + "," + cliente + "," + vehiculo + "," + servicio;
+        ordenes.add(orden);
+        guardarOrdenes();
+        actualizarTabla();
+        JOptionPane.showMessageDialog(this, "Se ha registrado la Orden correctamente");
+        limpiarCampos();
+    }
+
+    private void modificarOrden() {
+        String numero = campoNumero.getText().trim();
+        for (int i = 0; i < ordenes.size(); i++) {
+            String[] partes = ordenes.get(i).split(",");
+            if (partes[0].equalsIgnoreCase(numero)) {
+                String nuevoCliente = campoCliente.getText().trim();
+                String nuevoVehiculo = campoVehiculo.getText().trim();
+                String nuevoServicio = campoServicio.getText().trim();
+                if (nuevoCliente.isEmpty() || nuevoVehiculo.isEmpty() || nuevoServicio.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Debes completar todos los campos para continuar");
+                    return;
+                }
+                ordenes.set(i, numero + "," + nuevoCliente + "," + nuevoVehiculo + "," + nuevoServicio);
+                guardarOrdenes();
+                actualizarTabla();
+                JOptionPane.showMessageDialog(this, "Se ha modificado la Orden correctamente");
+                limpiarCampos();
+                return;
+            }
+        }
+        JOptionPane.showMessageDialog(this, "No se ha encontrado esta Orden");
+    }
+
+    private void eliminarOrden() {
+        String numero = campoNumero.getText().trim();
+        for (int i = 0; i < ordenes.size(); i++) {
+            String[] partes = ordenes.get(i).split(",");
+            if (partes[0].equalsIgnoreCase(numero)) {
+                int confirm = JOptionPane.showConfirmDialog(this, "¿Estás seguro que deseas eliminar esta orden?", "Confirmar", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    ordenes.remove(i);
+                    guardarOrdenes();
+                    actualizarTabla();
+                    JOptionPane.showMessageDialog(this, "Esta Orden ha sido eliminada correctamente");
+                    limpiarCampos();
+                }
+                return;
+            }
+        }
+        JOptionPane.showMessageDialog(this, "Esta Orden no ha sido encontrada");
+    }
+
+    private void actualizarTabla() {
+        modeloTabla.setRowCount(0);
+        for (String o : ordenes) {
+            String[] partes = o.split(",");
+            if (partes.length == 4) {
+                modeloTabla.addRow(new Object[]{partes[0], partes[1], partes[2], partes[3]});
+            }
+        }
+    }
+
+    private void limpiarCampos() {
+        campoNumero.setText("");
+        campoCliente.setText("");
+        campoVehiculo.setText("");
+        campoServicio.setText("");
+    }
+
+    private void guardarOrdenes() {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(archivo))) {
+            for (String o : ordenes) {
+                pw.println(o);
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error al guardar las órdenes");
+        }
+    }
+
+    private void cargarOrdenes() {
+        ordenes.clear();
+        File f = new File(archivo);
+        if (!f.exists()) return;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split(",");
+                if (partes.length == 4) {
+                    ordenes.add(linea);
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar las órdenes");
+        }
+    }
+}
