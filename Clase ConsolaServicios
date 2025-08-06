@@ -1,0 +1,126 @@
+package servicios;
+
+import java.util.Scanner;
+
+public class ConsolaServicios {
+
+    private ControladorServicios controlador;
+    private Scanner scanner;
+
+    public ConsolaServicios() {
+        controlador = new ControladorServicios();
+        scanner = new Scanner(System.in);
+    }
+
+    public void mostrarMenu() {
+        int opcion;
+        do {
+            System.out.println("\n--- GESTIÓN DE SERVICIOS ---");
+            System.out.println("1. Registrar Servicio");
+            System.out.println("2. Consultar Servicio");
+            System.out.println("3. Modificar Servicio");
+            System.out.println("4. Eliminar Servicio");
+            System.out.println("5. Mostrar Todos");
+            System.out.println("0. Salir");
+            System.out.print("Seleccione una opción: ");
+            opcion = scanner.nextInt();
+            scanner.nextLine(); // limpiar
+
+            switch (opcion) {
+                case 1 -> registrarServicio();
+                case 2 -> consultarServicio();
+                case 3 -> modificarServicio();
+                case 4 -> eliminarServicio();
+                case 5 -> mostrarTodos();
+                case 0 -> System.out.println("Saliendo...");
+                default -> System.out.println("Opción inválida");
+            }
+
+        } while (opcion != 0);
+    }
+
+    private void registrarServicio() {
+        System.out.print("Código: ");
+        String codigo = scanner.nextLine();
+
+        System.out.print("Descripción: ");
+        String descripcion = scanner.nextLine();
+
+        System.out.print("Tipo (Mecánica, Pintura, Revisión, Otros): ");
+        String tipo = scanner.nextLine();
+
+        System.out.print("ID Orden de Trabajo (si aplica): ");
+        String ordenId = scanner.nextLine();
+
+        System.out.print("Costo: ");
+        double costo = scanner.nextDouble();
+        scanner.nextLine(); // limpiar
+
+        Servicio nuevo = new Servicio(codigo, descripcion, tipo, ordenId, costo);
+        if (controlador.agregarServicio(nuevo)) {
+            System.out.println("Servicio registrado.");
+        } else {
+            System.out.println("El servicio ya existe.");
+        }
+    }
+
+    private void consultarServicio() {
+        System.out.print("Ingrese el código del servicio: ");
+        String codigo = scanner.nextLine();
+        Servicio servicio = controlador.buscarServicio(codigo);
+        if (servicio != null) {
+            System.out.println("Código: " + servicio.getCodigo());
+            System.out.println("Descripción: " + servicio.getDescripcion());
+            System.out.println("Tipo: " + servicio.getTipo());
+            System.out.println("Orden de Trabajo: " + servicio.getIdOrdenTrabajo());
+            System.out.println("Costo: " + servicio.getCosto());
+        } else {
+            System.out.println("No se encontró el servicio.");
+        }
+    }
+
+    private void modificarServicio() {
+        System.out.print("Código del servicio a modificar: ");
+        String codigo = scanner.nextLine();
+
+        Servicio existente = controlador.buscarServicio(codigo);
+        if (existente != null) {
+            System.out.print("Nueva descripción: ");
+            String descripcion = scanner.nextLine();
+
+            System.out.print("Nuevo tipo (Mecánica, Pintura, Revisión, Otros): ");
+            String tipo = scanner.nextLine();
+
+            System.out.print("Nuevo ID Orden de Trabajo: ");
+            String ordenId = scanner.nextLine();
+
+            System.out.print("Nuevo costo: ");
+            double costo = scanner.nextDouble();
+            scanner.nextLine(); // limpiar
+
+            Servicio actualizado = new Servicio(codigo, descripcion, tipo, ordenId, costo);
+            controlador.modificarServicio(codigo, actualizado);
+            System.out.println("Servicio modificado correctamente.");
+        } else {
+            System.out.println("Servicio no encontrado.");
+        }
+    }
+
+    private void eliminarServicio() {
+        System.out.print("Código del servicio a eliminar: ");
+        String codigo = scanner.nextLine();
+        if (controlador.eliminarServicio(codigo)) {
+            System.out.println("Servicio eliminado.");
+        } else {
+            System.out.println("Servicio no encontrado.");
+        }
+    }
+
+    private void mostrarTodos() {
+        System.out.println("--- Lista de Servicios ---");
+        for (Servicio s : controlador.getListaServicios()) {
+            System.out.println("Código: " + s.getCodigo() + " | Descripción: " + s.getDescripcion() +
+                    " | Tipo: " + s.getTipo() + " | Orden ID: " + s.getIdOrdenTrabajo() + " | Costo: " + s.getCosto());
+        }
+    }
+}
