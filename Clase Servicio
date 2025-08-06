@@ -1,0 +1,63 @@
+package servicios;
+
+public class Servicio {
+    private String codigo;
+    private String descripcion;
+    private String tipo; 
+    private String idOrdenTrabajo; 
+    private double costo;
+
+    public Servicio(String codigo, String descripcion, String tipo, String idOrdenTrabajo, double costo) {
+        this.codigo = codigo;
+        this.descripcion = descripcion;
+        this.tipo = tipo;
+        this.idOrdenTrabajo = idOrdenTrabajo;
+        this.costo = costo;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getIdOrdenTrabajo() {
+        return idOrdenTrabajo;
+    }
+
+    public void setIdOrdenTrabajo(String idOrdenTrabajo) {
+        this.idOrdenTrabajo = idOrdenTrabajo;
+    }
+
+    public double getCosto() {
+        return costo;
+    }
+
+    public void setCosto(double costo) {
+        this.costo = costo;
+    }
+
+    @Override
+    public String toString() {
+        return "Código: " + codigo + ", Descripción: " + descripcion + ", Tipo: " + tipo + 
+               ", ID Orden: " + idOrdenTrabajo + ", Costo: ₡" + costo;
+    }
+}
