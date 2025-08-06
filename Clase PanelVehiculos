@@ -1,0 +1,235 @@
+package paneles;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import persistencia.GestionadorDeArchivos;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+
+public class PanelVehiculos extends JPanel {
+
+    private JTextField campoPlaca, campoMarca, campoModelo, campoAño;
+    private JButton botonRegistrar, botonConsultar, botonModificar, botonEliminar;
+    private JTable tabla;
+    private DefaultTableModel modeloTabla;
+
+    private GestionadorDeArchivos gestor;
+
+    private ArrayList<String> listaVehiculos;
+
+    public PanelVehiculos() {
+        setLayout(new BorderLayout());
+
+        gestor = new GestionadorDeArchivos("vehiculos.txt");
+        listaVehiculos = gestor.leerArchivo();
+
+ 
+        JPanel panelFormulario = new JPanel(new GridLayout(4, 2, 5, 5));
+        panelFormulario.setBorder(BorderFactory.createTitledBorder("Datos del Vehículo"));
+
+        panelFormulario.add(new JLabel("Placa:"));
+        campoPlaca = new JTextField();
+        panelFormulario.add(campoPlaca);
+
+        panelFormulario.add(new JLabel("Marca:"));
+        campoMarca = new JTextField();
+        panelFormulario.add(campoMarca);
+
+        panelFormulario.add(new JLabel("Modelo:"));
+        campoModelo = new JTextField();
+        panelFormulario.add(campoModelo);
+
+        panelFormulario.add(new JLabel("Año:"));
+        campoAño = new JTextField();
+        panelFormulario.add(campoAño);
+
+        add(panelFormulario, BorderLayout.NORTH);
+
+      
+        modeloTabla = new DefaultTableModel(new Object[]{"Placa", "Marca", "Modelo", "Año"}, 0) {
+            // Evitar que se editen las celdas directamente
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        tabla = new JTable(modeloTabla);
+        tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        JScrollPane scrollTabla = new JScrollPane(tabla);
+        scrollTabla.setBorder(BorderFactory.createTitledBorder("Lista de Vehículos"));
+        add(scrollTabla, BorderLayout.CENTER);
+
+      
+        JPanel panelBotones = new JPanel(new GridLayout(2, 2, 10, 10));
+        panelBotones.setBorder(BorderFactory.createEmptyBorder(10, 40, 10, 40)); // márgenes para centrar
+
+        botonRegistrar = new JButton("Registrar Vehículo");
+        botonConsultar = new JButton("Consultar Vehículos");
+        botonModificar = new JButton("Modificar Vehículo");
+        botonEliminar = new JButton("Eliminar Vehículo");
+
+        panelBotones.add(botonRegistrar);
+        panelBotones.add(botonConsultar);
+        panelBotones.add(botonModificar);
+        panelBotones.add(botonEliminar);
+
+        add(panelBotones, BorderLayout.SOUTH);
+
+       
+
+        botonRegistrar.addActionListener(e -> registrarVehiculo());
+
+        botonConsultar.addActionListener(e -> {
+            listaVehiculos = gestor.leerArchivo();
+            actualizarTabla();
+        });
+
+        botonModificar.addActionListener(e -> modificarVehiculo());
+
+        botonEliminar.addActionListener(e -> eliminarVehiculo());
+
+       
+        tabla.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && tabla.getSelectedRow() != -1) {
+                int fila = tabla.getSelectedRow();
+                campoPlaca.setText(modeloTabla.getValueAt(fila, 0).toString());
+                campoMarca.setText(modeloTabla.getValueAt(fila, 1).toString());
+                campoModelo.setText(modeloTabla.getValueAt(fila, 2).toString());
+                campoAño.setText(modeloTabla.getValueAt(fila, 3).toString());
+            }
+        });
+
+        
+        actualizarTabla();
+    }
+
+    private void registrarVehiculo() {
+        String placa = campoPlaca.getText().trim();
+        String marca = campoMarca.getText().trim();
+        String modelo = campoModelo.getText().trim();
+        String año = campoAño.getText().trim();
+
+        if (placa.isEmpty() || marca.isEmpty() || modelo.isEmpty() || año.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe completar todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        
+        try {
+            Integer.parseInt(año);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "El año debe ser un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        
+        for (String linea : listaVehiculos) {
+            String[] partes = linea.split(",");
+            if (partes.length >= 1 && partes[0].equalsIgnoreCase(placa)) {
+                JOptionPane.showMessageDialog(this, "Ya existe un vehículo con esa placa.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
+        String nuevaLinea = placa + "," + marca + "," + modelo + "," + año;
+        listaVehiculos.add(nuevaLinea);
+        gestor.sobrescribirArchivo(listaVehiculos);
+        limpiarCampos();
+        actualizarTabla();
+        JOptionPane.showMessageDialog(this, "Vehículo registrado con éxito.");
+    }
+
+    private void modificarVehiculo() {
+        String placa = campoPlaca.getText().trim();
+        String marca = campoMarca.getText().trim();
+        String modelo = campoModelo.getText().trim();
+        String año = campoAño.getText().trim();
+
+        if (placa.isEmpty() || marca.isEmpty() || modelo.isEmpty() || año.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe completar todos los campos para modificar.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            Integer.parseInt(año);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "El año debe ser un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        boolean encontrado = false;
+
+        for (int i = 0; i < listaVehiculos.size(); i++) {
+            String[] partes = listaVehiculos.get(i).split(",");
+            if (partes.length >= 1 && partes[0].equalsIgnoreCase(placa)) {
+                listaVehiculos.set(i, placa + "," + marca + "," + modelo + "," + año);
+                encontrado = true;
+                break;
+            }
+        }
+
+        if (encontrado) {
+            gestor.sobrescribirArchivo(listaVehiculos);
+            limpiarCampos();
+            actualizarTabla();
+            JOptionPane.showMessageDialog(this, "Vehículo modificado con éxito.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Vehículo no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void eliminarVehiculo() {
+        String placa = campoPlaca.getText().trim();
+
+        if (placa.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe ingresar la placa para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        boolean encontrado = false;
+
+        for (int i = 0; i < listaVehiculos.size(); i++) {
+            String[] partes = listaVehiculos.get(i).split(",");
+            if (partes.length >= 1 && partes[0].equalsIgnoreCase(placa)) {
+                int confirm = JOptionPane.showConfirmDialog(this,
+                        "¿Está seguro que desea eliminar el vehículo con placa: " + placa + "?",
+                        "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    listaVehiculos.remove(i);
+                    encontrado = true;
+                }
+                break;
+            }
+        }
+
+        if (encontrado) {
+            gestor.sobrescribirArchivo(listaVehiculos);
+            limpiarCampos();
+            actualizarTabla();
+            JOptionPane.showMessageDialog(this, "Vehículo eliminado con éxito.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Vehículo no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void actualizarTabla() {
+        modeloTabla.setRowCount(0);
+        for (String linea : listaVehiculos) {
+            String[] partes = linea.split(",");
+            if (partes.length >= 4) {
+                modeloTabla.addRow(new Object[]{partes[0], partes[1], partes[2], partes[3]});
+            }
+        }
+    }
+
+    private void limpiarCampos() {
+        campoPlaca.setText("");
+        campoMarca.setText("");
+        campoModelo.setText("");
+        campoAño.setText("");
+        tabla.clearSelection();
+    }
+}
