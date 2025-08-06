@@ -1,0 +1,47 @@
+package ordenes;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+
+public class ControladorOrdenTrabajo {
+    private ArrayList<OrdenTrabajo> listaOrdenes;
+
+    public ControladorOrdenTrabajo() {
+        listaOrdenes = new ArrayList<>();
+    }
+
+    public void registrarOrden(OrdenTrabajo orden) {
+        listaOrdenes.add(orden);
+    }
+
+    public OrdenTrabajo buscarPorId(String id) {
+        for (OrdenTrabajo o : listaOrdenes) {
+            if (o.getId().equalsIgnoreCase(id)) {
+                return o;
+            }
+        }
+        return null;
+    }
+
+    public void modificarOrden(String id, String nuevoCodigoServicio, LocalDate nuevaFechaIngreso,
+                               LocalDate nuevaFechaEntrega, double nuevoCostoTotal) {
+        OrdenTrabajo orden = buscarPorId(id);
+        if (orden != null) {
+            orden.setCodigoServicio(nuevoCodigoServicio);
+            orden.setFechaIngreso(nuevaFechaIngreso);
+            orden.setFechaEntrega(nuevaFechaEntrega);
+            orden.setCostoTotal(nuevoCostoTotal);
+        }
+    }
+
+    public ArrayList<OrdenTrabajo> getListaOrdenes() {
+        return listaOrdenes;
+    }
+
+    public void listarOrdenes() {
+        System.out.println("\n--- LISTA DE ÓRDENES DE TRABAJO ---");
+        for (OrdenTrabajo o : listaOrdenes) {
+            System.out.println(o);
+        }
+    }
+}
