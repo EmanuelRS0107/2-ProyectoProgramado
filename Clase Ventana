@@ -1,0 +1,134 @@
+package iiproyectoprogramado;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import paneles.PanelClientes;
+import paneles.PanelVehiculos;
+import paneles.PanelServicios;
+import paneles.PanelOrdenes;
+
+public class VentanaPrincipal extends JFrame {
+
+    public VentanaPrincipal() {
+        setTitle("Sistema de Taller E&H");
+        setSize(800, 600);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        JTabbedPane pestañas = new JTabbedPane();
+
+        pestañas.addTab("Gestión de Clientes", new PanelClientes());
+        pestañas.addTab("Gestión de Vehículos", new PanelVehiculos());
+        pestañas.addTab("Gestión de Servicios", new PanelServicios());
+        pestañas.addTab("Órdenes de Trabajo", new PanelOrdenes());
+
+        setJMenuBar(crearMenu());
+        add(pestañas);
+    }
+
+    private JMenuBar crearMenu() {
+        JMenuBar barra = new JMenuBar();
+
+        // Menú Archivo
+        JMenu archivo = new JMenu("Archivo");
+        JMenuItem abrir = new JMenuItem("Abrir Archivo...");
+        abrir.addActionListener(e -> abrirArchivo());
+        JMenuItem salir = new JMenuItem("Salir");
+        salir.addActionListener(e -> System.exit(0));
+        archivo.add(abrir);
+        archivo.addSeparator();
+        archivo.add(salir);
+
+        // Menú Ayuda
+        JMenu ayuda = new JMenu("Ayuda");
+        JMenuItem acercaDe = new JMenuItem("Acerca de");
+        acercaDe.addActionListener(e -> mostrarAcercaDe());
+        ayuda.add(acercaDe);
+
+        barra.add(archivo);
+        barra.add(ayuda);
+
+        return barra;
+    }
+
+    private void abrirArchivo() {
+        JFileChooser selector = new JFileChooser();
+        int resultado = selector.showOpenDialog(this);
+        if (resultado == JFileChooser.APPROVE_OPTION) {
+            File archivoSeleccionado = selector.getSelectedFile();
+            JOptionPane.showMessageDialog(this, 
+                "Archivo seleccionado:\n" + archivoSeleccionado.getAbsolutePath(),
+                "Archivo Abierto", 
+                JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private void mostrarAcercaDe() {
+        JDialog dialogo = new JDialog(this, "Acerca de", true);
+        dialogo.setSize(400, 200);
+        dialogo.setLocationRelativeTo(this);
+        dialogo.setLayout(new BorderLayout());
+
+        JLabel etiqueta = new JLabel("<html><center><h2>Sistema de Gestión de Taller E&H</h2>"
+                + "<p>Desarrollado por Hellen y Emanuel</p>"
+                + "<p>Proyecto Java Swing - 2025</p></center></html>", JLabel.CENTER);
+        etiqueta.setFont(new Font("Arial", Font.PLAIN, 14));
+        dialogo.add(etiqueta, BorderLayout.CENTER);
+
+        JButton cerrar = new JButton("Cerrar");
+        cerrar.addActionListener(e -> dialogo.dispose());
+        JPanel panelBoton = new JPanel();
+        panelBoton.add(cerrar);
+
+        dialogo.add(panelBoton, BorderLayout.SOUTH);
+        dialogo.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Mostrar mensaje de bienvenida en ventana gráfica
+        SwingUtilities.invokeLater(() -> {
+            mostrarBienvenida();
+            new VentanaPrincipal().setVisible(true);
+        });
+    }
+
+    private static void mostrarBienvenida() {
+        // Crear panel personalizado
+        JPanel panel = new JPanel();
+        panel.setBackground(Color.WHITE);
+        panel.setLayout(new BorderLayout());
+
+        JLabel titulo = new JLabel("Bienvenido Profesor");
+        titulo.setFont(new Font("Arial", Font.BOLD, 26));
+        titulo.setForeground(new Color(0, 102, 204)); // Azul
+
+        JLabel subtitulo = new JLabel("al Sistema de Gestión del Taller E&H", JLabel.CENTER);
+        subtitulo.setFont(new Font("Arial", Font.PLAIN, 18));
+        subtitulo.setForeground(new Color(0, 102, 204));
+
+        JLabel icono = new JLabel(); // Imagen decorativa opcional
+        icono.setFont(new Font("Arial", Font.PLAIN, 64));
+
+        // Panel de texto
+        JPanel panelTexto = new JPanel(new GridLayout(3, 1));
+        panelTexto.setBackground(Color.WHITE);
+        titulo.setHorizontalAlignment(SwingConstants.CENTER);
+        subtitulo.setHorizontalAlignment(SwingConstants.CENTER);
+        icono.setHorizontalAlignment(SwingConstants.CENTER);
+        panelTexto.add(titulo);
+        panelTexto.add(subtitulo);
+        panelTexto.add(icono);
+
+        panel.add(panelTexto, BorderLayout.CENTER);
+
+        // Mostrar ventana personalizada
+        JOptionPane.showMessageDialog(null, panel, "Bienvenida", JOptionPane.PLAIN_MESSAGE);
+    }
+}
