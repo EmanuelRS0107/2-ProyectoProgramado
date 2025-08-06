@@ -1,0 +1,75 @@
+package ordenes;
+
+import java.time.LocalDate;
+
+public class OrdenTrabajo {
+    private String id;
+    private String cedulaCliente;
+    private String placaVehiculo;
+    private String codigoServicio;
+    private LocalDate fechaIngreso;
+    private LocalDate fechaEntrega;
+    private double costoTotal;
+
+    public OrdenTrabajo(String id, String cedulaCliente, String placaVehiculo, String codigoServicio,
+                        LocalDate fechaIngreso, LocalDate fechaEntrega, double costoTotal) {
+        this.id = id;
+        this.cedulaCliente = cedulaCliente;
+        this.placaVehiculo = placaVehiculo;
+        this.codigoServicio = codigoServicio;
+        this.fechaIngreso = fechaIngreso;
+        this.fechaEntrega = fechaEntrega;
+        this.costoTotal = costoTotal;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getCedulaCliente() {
+        return cedulaCliente;
+    }
+
+    public String getPlacaVehiculo() {
+        return placaVehiculo;
+    }
+
+    public String getCodigoServicio() {
+        return codigoServicio;
+    }
+
+    public LocalDate getFechaIngreso() {
+        return fechaIngreso;
+    }
+
+    public LocalDate getFechaEntrega() {
+        return fechaEntrega;
+    }
+
+    public double getCostoTotal() {
+        return costoTotal;
+    }
+
+    public void setCodigoServicio(String codigoServicio) {
+        this.codigoServicio = codigoServicio;
+    }
+
+    public void setFechaIngreso(LocalDate fechaIngreso) {
+        this.fechaIngreso = fechaIngreso;
+    }
+
+    public void setFechaEntrega(LocalDate fechaEntrega) {
+        this.fechaEntrega = fechaEntrega;
+    }
+
+    public void setCostoTotal(double costoTotal) {
+        this.costoTotal = costoTotal;
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id + ", Cliente: " + cedulaCliente + ", Vehículo: " + placaVehiculo +
+               ", Servicio: " + codigoServicio + ", Ingreso: " + fechaIngreso +
+               ", Entrega: " + fechaEntrega + ", Costo: ₡" + costoTotal;
+    }
+}
