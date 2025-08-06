@@ -1,0 +1,101 @@
+package servicios;
+
+import java.io.*;
+import java.util.ArrayList;
+
+public class ControladorServicios {
+    private ArrayList<Servicio> listaServicios;
+    private final String archivoServicios = "servicios.txt";
+
+    public ControladorServicios() {
+        listaServicios = new ArrayList<>();
+        cargarServicios();
+    }
+
+    public boolean agregarServicio(Servicio servicio) {
+        if (buscarServicio(servicio.getCodigo()) == null) {
+            listaServicios.add(servicio);
+            guardarServicios();
+            return true;
+        }
+        return false;
+    }
+
+    public Servicio buscarServicio(String codigo) {
+        for (Servicio s : listaServicios) {
+            if (s.getCodigo().equalsIgnoreCase(codigo)) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    public boolean eliminarServicio(String codigo) {
+        Servicio servicio = buscarServicio(codigo);
+        if (servicio != null) {
+            listaServicios.remove(servicio);
+            guardarServicios();
+            return true;
+        }
+        return false;
+    }
+
+    public void modificarServicio(String codigo, Servicio actualizado) {
+        Servicio existente = buscarServicio(codigo);
+        if (existente != null) {
+            existente.setDescripcion(actualizado.getDescripcion());
+            existente.setTipo(actualizado.getTipo());
+            existente.setIdOrdenTrabajo(actualizado.getIdOrdenTrabajo());
+            existente.setCosto(actualizado.getCosto());
+            guardarServicios();
+        }
+    }
+
+    public ArrayList<Servicio> getListaServicios() {
+        return listaServicios;
+    }
+
+    public void setListaServicios(ArrayList<Servicio> listaServicios) {
+        this.listaServicios = listaServicios;
+    }
+
+    private void guardarServicios() {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivoServicios))) {
+            for (Servicio s : listaServicios) {
+                // Guardamos cada servicio en una línea separada por comas
+                String linea = s.getCodigo() + "," + s.getDescripcion() + "," + s.getTipo() + "," + s.getIdOrdenTrabajo() + "," + s.getCosto();
+                bw.write(linea);
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error guardando servicios: " + e.getMessage());
+        }
+    }
+
+    private void cargarServicios() {
+        listaServicios.clear();
+        File archivo = new File(archivoServicios);
+        if (!archivo.exists()) {
+            return; // No hay archivo para cargar
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(archivoServicios))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split(",");
+                if (partes.length == 5) {
+                    String codigo = partes[0];
+                    String descripcion = partes[1];
+                    String tipo = partes[2];
+                    String ordenId = partes[3];
+                    double costo = Double.parseDouble(partes[4]);
+
+                    Servicio s = new Servicio(codigo, descripcion, tipo, ordenId, costo);
+                    listaServicios.add(s);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error cargando servicios: " + e.getMessage());
+        }
+    }
+}
