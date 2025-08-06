@@ -1,5 +1,5 @@
  Hellen Adriana Lobo Rodríguez  
-- Emanuel Rodríguez Sánchez  
+ Emanuel Rodríguez Sánchez  
 Estudiantes de segundo año, Ingeniería en Sistemas  
 Curso: Programación IV  
 
