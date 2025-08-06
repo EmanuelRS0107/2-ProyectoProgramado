@@ -1,5 +1,5 @@
 package paneles;
-
+//edito los comentarios del código
 import clientes.ClassCliente;
 import clientes.ControladorCliente;
 
@@ -60,7 +60,7 @@ public class PanelClientes extends JPanel {
 
         add(panelBotones, BorderLayout.SOUTH);
 
-        //Registrar
+        //btn Registrar
         btnRegistrar.addActionListener(e -> {
             String cedula = txtCedula.getText();
             String nombre = txtNombre.getText();
@@ -73,7 +73,7 @@ public class PanelClientes extends JPanel {
             limpiarCampos();
         });
 
-        //Consultar
+        //btn Consultar
         btnConsultar.addActionListener(e -> {
             int filaSeleccionada = tabla.getSelectedRow();
             if (filaSeleccionada != -1) {
@@ -92,7 +92,7 @@ public class PanelClientes extends JPanel {
             }
         });
 
-        //Modificar
+        //btn Modificar
         btnModificar.addActionListener(e -> {
             int filaSeleccionada = tabla.getSelectedRow();
             if (filaSeleccionada != -1) {
@@ -109,7 +109,7 @@ public class PanelClientes extends JPanel {
             }
         });
 
-        //Eliminar
+        //btn Eliminar
         btnEliminar.addActionListener(e -> {
             int filaSeleccionada = tabla.getSelectedRow();
             if (filaSeleccionada != -1) {
