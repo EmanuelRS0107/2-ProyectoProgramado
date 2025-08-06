@@ -1,0 +1,117 @@
+package vehiculos;
+
+import java.util.Scanner;
+import java.util.ArrayList;
+
+public class ConsolaVehiculos {
+    private ControladorVehiculo controlador;
+    private Scanner scanner;
+
+    public ConsolaVehiculos() {
+        controlador = new ControladorVehiculo();
+        scanner = new Scanner(System.in);
+    }
+
+    public void mostrarMenu() {
+        int opcion;
+        do {
+            System.out.println("\n--- GESTIÓN DE VEHÍCULOS ---");
+            System.out.println("1. Registrar vehículo");
+            System.out.println("2. Consultar vehículo por placa");
+            System.out.println("3. Modificar vehículo");
+            System.out.println("4. Eliminar vehículo");
+            System.out.println("5. Listar todos los vehículos");
+            System.out.println("0. Volver al menú principal");
+            System.out.print("Seleccione una opción: ");
+            opcion = scanner.nextInt();
+            scanner.nextLine(); 
+
+            switch (opcion) {
+                case 1 -> registrarVehiculo();
+                case 2 -> consultarVehiculoPorPlaca();
+                case 3 -> modificarVehiculo();
+                case 4 -> eliminarVehiculo();
+                case 5 -> listarVehiculos();
+                case 0 -> System.out.println("Volviendo al menú principal...");
+                default -> System.out.println("Opción inválida. Intente de nuevo.");
+            }
+        } while (opcion != 0);
+    }
+
+    private void registrarVehiculo() {
+        System.out.println("\n--- REGISTRO DE VEHÍCULO ---");
+        System.out.print("Placa: ");
+        String placa = scanner.nextLine();
+        System.out.print("Marca: ");
+        String marca = scanner.nextLine();
+        System.out.print("Modelo: ");
+        String modelo = scanner.nextLine();
+        System.out.print("Año: ");
+        int anio = scanner.nextInt();
+        scanner.nextLine(); 
+
+        Vehiculo vehiculo = new Vehiculo(placa, marca, modelo, anio);
+        controlador.agregarVehiculo(vehiculo);
+        System.out.println("Vehículo registrado exitosamente.");
+    }
+
+    private void consultarVehiculoPorPlaca() {
+        System.out.println("\n--- CONSULTAR VEHÍCULO ---");
+        System.out.print("Ingrese la placa del vehículo: ");
+        String placa = scanner.nextLine();
+        Vehiculo vehiculo = controlador.buscarVehiculoPorPlaca(placa);
+        if (vehiculo != null) {
+            System.out.println(vehiculo);
+        } else {
+            System.out.println("Vehículo no encontrado.");
+        }
+    }
+
+    private void modificarVehiculo() {
+        System.out.println("\n--- MODIFICAR VEHÍCULO ---");
+        System.out.print("Ingrese la placa del vehículo a modificar: ");
+        String placa = scanner.nextLine();
+        Vehiculo vehiculo = controlador.buscarVehiculoPorPlaca(placa);
+        if (vehiculo != null) {
+            System.out.print("Nueva marca: ");
+            String marca = scanner.nextLine();
+            System.out.print("Nuevo modelo: ");
+            String modelo = scanner.nextLine();
+            System.out.print("Nuevo año: ");
+            int anio = scanner.nextInt();
+            scanner.nextLine();
+
+            vehiculo.setMarca(marca);
+            vehiculo.setModelo(modelo);
+            vehiculo.setAnio(anio);
+            controlador.actualizarVehiculos();
+            System.out.println("Vehículo modificado correctamente.");
+        } else {
+            System.out.println("Vehículo no encontrado.");
+        }
+    }
+
+    private void eliminarVehiculo() {
+        System.out.println("\n--- ELIMINAR VEHÍCULO ---");
+        System.out.print("Ingrese la placa del vehículo a eliminar: ");
+        String placa = scanner.nextLine();
+        boolean eliminado = controlador.eliminarVehiculo(placa);
+        if (eliminado) {
+            System.out.println("Vehículo eliminado exitosamente.");
+        } else {
+            System.out.println("Vehículo no encontrado.");
+        }
+    }
+
+    private void listarVehiculos() {
+        System.out.println("\n--- LISTA DE VEHÍCULOS ---");
+        ArrayList<Vehiculo> lista = controlador.getListaVehiculos();
+        if (lista.isEmpty()) {
+            System.out.println("No hay vehículos registrados.");
+        } else {
+            for (Vehiculo v : lista) {
+                System.out.println(v);
+            }
+        }
+    }
+}
