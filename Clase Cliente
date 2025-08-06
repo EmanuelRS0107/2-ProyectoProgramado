@@ -50,3 +50,4 @@ public class ClassCliente {
         return "Cédula: " + cedula + ", Nombre: " + nombre + ", Teléfono: " + telefono + ", Dirección: " + direccion;
     }
 }
+
