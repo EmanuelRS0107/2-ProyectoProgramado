@@ -1,0 +1,93 @@
+package ordenes;
+
+import java.util.Scanner;
+import java.time.LocalDate;
+
+public class ConsolaOrdenes {
+    private ControladorOrdenTrabajo controlador;
+    private Scanner scanner;
+
+    public ConsolaOrdenes() {
+        controlador = new ControladorOrdenTrabajo();
+        scanner = new Scanner(System.in);
+    }
+
+    public void mostrarMenu() {
+        int opcion;
+        do {
+            System.out.println("\n--- GESTIÓN DE ÓRDENES DE TRABAJO ---");
+            System.out.println("1. Registrar orden");
+            System.out.println("2. Consultar orden por ID");
+            System.out.println("3. Modificar orden");
+            System.out.println("4. Listar todas las órdenes");
+            System.out.println("0. Volver al menú principal");
+            System.out.print("Seleccione una opción: ");
+            opcion = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (opcion) {
+                case 1 -> registrarOrden();
+                case 2 -> consultarOrden();
+                case 3 -> modificarOrden();
+                case 4 -> controlador.listarOrdenes();
+                case 0 -> System.out.println("Volviendo al menú principal...");
+                default -> System.out.println("Opción inválida.");
+            }
+        } while (opcion != 0);
+    }
+
+    private void registrarOrden() {
+        System.out.print("ID de orden: ");
+        String id = scanner.nextLine();
+        System.out.print("Cédula del cliente: ");
+        String cedula = scanner.nextLine();
+        System.out.print("Placa del vehículo: ");
+        String placa = scanner.nextLine();
+        System.out.print("Código del servicio: ");
+        String codigo = scanner.nextLine();
+        System.out.print("Fecha de ingreso (YYYY-MM-DD): ");
+        LocalDate ingreso = LocalDate.parse(scanner.nextLine());
+        System.out.print("Fecha de entrega (YYYY-MM-DD): ");
+        LocalDate entrega = LocalDate.parse(scanner.nextLine());
+        System.out.print("Costo total: ");
+        double costo = scanner.nextDouble();
+        scanner.nextLine();
+
+        OrdenTrabajo orden = new OrdenTrabajo(id, cedula, placa, codigo, ingreso, entrega, costo);
+        controlador.registrarOrden(orden);
+        System.out.println("Orden registrada correctamente.");
+    }
+
+    private void consultarOrden() {
+        System.out.print("Ingrese el ID de la orden: ");
+        String id = scanner.nextLine();
+        OrdenTrabajo orden = controlador.buscarPorId(id);
+        if (orden != null) {
+            System.out.println(orden);
+        } else {
+            System.out.println("Orden no encontrada.");
+        }
+    }
+
+    private void modificarOrden() {
+        System.out.print("Ingrese el ID de la orden a modificar: ");
+        String id = scanner.nextLine();
+        OrdenTrabajo orden = controlador.buscarPorId(id);
+        if (orden != null) {
+            System.out.print("Nuevo código de servicio: ");
+            String codigo = scanner.nextLine();
+            System.out.print("Nueva fecha de ingreso (YYYY-MM-DD): ");
+            LocalDate ingreso = LocalDate.parse(scanner.nextLine());
+            System.out.print("Nueva fecha de entrega (YYYY-MM-DD): ");
+            LocalDate entrega = LocalDate.parse(scanner.nextLine());
+            System.out.print("Nuevo costo total: ");
+            double costo = scanner.nextDouble();
+            scanner.nextLine();
+
+            controlador.modificarOrden(id, codigo, ingreso, entrega, costo);
+            System.out.println("Orden modificada correctamente.");
+        } else {
+            System.out.println("Orden no encontrada.");
+        }
+    }
+}
