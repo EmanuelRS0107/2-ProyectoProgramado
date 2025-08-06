@@ -1,0 +1,141 @@
+package paneles;
+
+import clientes.ClassCliente;
+import clientes.ControladorCliente;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.*;
+
+public class PanelClientes extends JPanel {
+
+    private ControladorCliente controladorCliente;
+
+    private JTextField txtCedula;
+    private JTextField txtNombre;
+    private JTextField txtTelefono;
+    private JTextField txtDireccion;
+    private JTable tabla;
+    private DefaultTableModel modelo;
+
+    public PanelClientes() {
+        controladorCliente = new ControladorCliente();
+
+        setLayout(new BorderLayout());
+
+        JPanel panelCampos = new JPanel(new GridLayout(4, 2));
+        panelCampos.add(new JLabel("Cédula:"));
+        txtCedula = new JTextField();
+        panelCampos.add(txtCedula);
+
+        panelCampos.add(new JLabel("Nombre:"));
+        txtNombre = new JTextField();
+        panelCampos.add(txtNombre);
+
+        panelCampos.add(new JLabel("Teléfono:"));
+        txtTelefono = new JTextField();
+        panelCampos.add(txtTelefono);
+
+        panelCampos.add(new JLabel("Dirección:"));
+        txtDireccion = new JTextField();
+        panelCampos.add(txtDireccion);
+
+        add(panelCampos, BorderLayout.NORTH);
+
+        modelo = new DefaultTableModel(new String[]{"Cédula", "Nombre", "Teléfono", "Dirección"}, 0);
+        tabla = new JTable(modelo);
+        add(new JScrollPane(tabla), BorderLayout.CENTER);
+
+        JPanel panelBotones = new JPanel(new GridLayout(2, 2, 5, 5));
+        JButton btnRegistrar = new JButton("Registrar");
+        JButton btnConsultar = new JButton("Consultar");
+        JButton btnModificar = new JButton("Modificar");
+        JButton btnEliminar = new JButton("Eliminar");
+
+        panelBotones.add(btnRegistrar);
+        panelBotones.add(btnConsultar);
+        panelBotones.add(btnModificar);
+        panelBotones.add(btnEliminar);
+
+        add(panelBotones, BorderLayout.SOUTH);
+
+        //Registrar
+        btnRegistrar.addActionListener(e -> {
+            String cedula = txtCedula.getText();
+            String nombre = txtNombre.getText();
+            String telefono = txtTelefono.getText();
+            String direccion = txtDireccion.getText();
+
+            ClassCliente cliente = new ClassCliente(cedula, nombre, telefono, direccion);
+            controladorCliente.registrarCliente(cliente);
+            actualizarTabla();
+            limpiarCampos();
+        });
+
+        //Consultar
+        btnConsultar.addActionListener(e -> {
+            int filaSeleccionada = tabla.getSelectedRow();
+            if (filaSeleccionada != -1) {
+                String cedula = (String) modelo.getValueAt(filaSeleccionada, 0);
+                ClassCliente cliente = controladorCliente.buscarClientePorCedula(cedula);
+                if (cliente != null) {
+                    txtCedula.setText(cliente.getCedula());
+                    txtNombre.setText(cliente.getNombre());
+                    txtTelefono.setText(cliente.getTelefono());
+                    txtDireccion.setText(cliente.getDireccion());
+                } else {
+                    JOptionPane.showMessageDialog(this, "Cliente no encontrado.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Por favor seleccione un cliente de la tabla.");
+            }
+        });
+
+        //Modificar
+        btnModificar.addActionListener(e -> {
+            int filaSeleccionada = tabla.getSelectedRow();
+            if (filaSeleccionada != -1) {
+                String cedula = txtCedula.getText();
+                String nuevoNombre = txtNombre.getText();
+                String nuevoTelefono = txtTelefono.getText();
+                String nuevaDireccion = txtDireccion.getText();
+
+                controladorCliente.modificarCliente(cedula, nuevoNombre, nuevoTelefono, nuevaDireccion);
+                actualizarTabla();
+                limpiarCampos();
+            } else {
+                JOptionPane.showMessageDialog(this, "Por favor seleccione un cliente de la tabla.");
+            }
+        });
+
+        //Eliminar
+        btnEliminar.addActionListener(e -> {
+            int filaSeleccionada = tabla.getSelectedRow();
+            if (filaSeleccionada != -1) {
+                String cedula = (String) modelo.getValueAt(filaSeleccionada, 0);
+                controladorCliente.eliminarCliente(cedula);
+                actualizarTabla();
+                limpiarCampos();
+            } else {
+                JOptionPane.showMessageDialog(this, "Por favor seleccione un cliente de la tabla.");
+            }
+        });
+
+        actualizarTabla();
+    }
+
+    private void actualizarTabla() {
+        modelo.setRowCount(0);
+        for (ClassCliente cliente : controladorCliente.getListaClientes()) {
+            modelo.addRow(new Object[]{cliente.getCedula(), cliente.getNombre(), cliente.getTelefono(), cliente.getDireccion()});
+        }
+    }
+
+    private void limpiarCampos() {
+        txtCedula.setText("");
+        txtNombre.setText("");
+        txtTelefono.setText("");
+        txtDireccion.setText("");
+    }
+}
