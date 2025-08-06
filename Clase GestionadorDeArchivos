@@ -1,0 +1,106 @@
+package persistencia;
+
+import clientes.ClassCliente;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class GestionadorDeArchivos {
+
+    private String ruta;
+
+    public GestionadorDeArchivos(String ruta) {
+        this.ruta = ruta;
+    }
+
+    
+    public ArrayList<String> leerArchivo() {
+        ArrayList<String> lineas = new ArrayList<>();
+        File archivo = new File(ruta);
+
+        if (!archivo.exists()) {
+            // Si el archivo no existe, lo crea vacío
+            try {
+                archivo.createNewFile();
+            } catch (IOException e) {
+                System.out.println("No se pudo crear el archivo: " + ruta);
+            }
+            return lineas;
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                lineas.add(linea);
+            }
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo: " + ruta);
+        }
+
+        return lineas;
+    }
+
+    public void escribirLinea(String linea) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(ruta, true))) {
+            bw.write(linea);
+            bw.newLine();
+        } catch (IOException e) {
+            System.out.println("Error al escribir en el archivo: " + ruta);
+        }
+    }
+
+   
+    public void sobrescribirArchivo(ArrayList<String> lineas) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(ruta))) {
+            for (String linea : lineas) {
+                bw.write(linea);
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error al sobrescribir el archivo: " + ruta);
+        }
+    }
+
+
+    public static void guardarClientes(List<ClassCliente> lista) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("clientes.txt"))) {
+            for (ClassCliente cliente : lista) {
+                String linea = cliente.getCedula() + "," + cliente.getNombre() + "," + cliente.getTelefono() + "," + cliente.getDireccion();
+                bw.write(linea);
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error al guardar clientes.");
+        }
+    }
+
+    
+    public static List<ClassCliente> cargarClientes() {
+        List<ClassCliente> lista = new ArrayList<>();
+        File archivo = new File("clientes.txt");
+
+        if (!archivo.exists()) {
+            return lista; // Devuelve lista vacía si no existe el archivo
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split(",");
+                if (partes.length == 4) {
+                    String cedula = partes[0];
+                    String nombre = partes[1];
+                    String telefono = partes[2];
+                    String direccion = partes[3];
+                    ClassCliente cliente = new ClassCliente(cedula, nombre, telefono, direccion);
+                    lista.add(cliente);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error al cargar clientes.");
+        }
+
+        return lista;
+    }
+}
+
