@@ -100,7 +100,7 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private static void mostrarBienvenida() {
-        // Crear panel personalizado
+        
         JPanel panel = new JPanel();
         panel.setBackground(Color.WHITE);
         panel.setLayout(new BorderLayout());
